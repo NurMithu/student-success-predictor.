@@ -1,0 +1,249 @@
+feature,importance
+Curricular units 2nd sem (approved),1.0413552476557961
+Mother's occupation_1,1.0334021928989865
+Mother's occupation_12,0.9371046500708061
+Father's qualification_29,0.9101842013950697
+Application mode_6,0.8360024597074346
+Mother's occupation_29,0.8277046836303974
+total_units_approved,0.7995650660725436
+Father's occupation_12,0.796406574735043
+Course_2,0.6757616876959786
+Nacionality_11,0.6752146433150873
+Course_10,0.63466976730259
+Course_7,0.6172491887035464
+Curricular units 2nd sem (enrolled),0.6146562434595421
+Application mode_3,0.5913653793392849
+Mother's occupation_9,0.5886257576050042
+Course_8,0.5876769386702634
+Mother's occupation_18,0.5815891256392268
+Mother's qualification_28,0.5665193610774125
+Course_16,0.560993382198668
+Application mode_5,0.5297629829349125
+Mother's qualification_4,0.5287075068787024
+Curricular units 1st sem (approved),0.5256358812302512
+Mother's occupation_30,0.5206867759461434
+Marital status_6,0.5193227629900795
+Father's qualification_2,0.5107131782181319
+Previous qualification_4,0.5088332669614848
+Nacionality_19,0.5025955542453775
+Father's occupation_1,0.4834779594034893
+Father's qualification_30,0.47809377374070633
+Nacionality_12,0.47328296786700436
+Previous qualification_2,0.46840152175855687
+Mother's qualification_26,0.46768631800793087
+Mother's occupation_19,0.45743188939370993
+Previous qualification_17,0.4423644560470265
+Father's occupation_35,0.4399342478386588
+Application mode_17,0.430408682810274
+Tuition fees up to date_0,0.4303764521696067
+Father's qualification_5,0.43036217716881797
+approval_ratio,0.42922624535058224
+total_units_enrolled,0.4188258951979409
+Tuition fees up to date_1,0.4118566162988437
+Father's occupation_20,0.40442320187822806
+Father's qualification_21,0.40106240227891515
+Mother's qualification_7,0.39649079814185423
+Marital status_3,0.394543814977375
+Mother's qualification_10,0.38060630369313286
+Father's qualification_9,0.3710631550217558
+Father's occupation_5,0.3710583405600028
+Father's qualification_33,0.36682105794705927
+Mother's qualification_19,0.35058741899525786
+socioeconomic_risk_flags,0.3503713601808161
+Father's qualification_7,0.34892099000714677
+Mother's qualification_2,0.34522080875656275
+Application mode_13,0.3444905580767079
+Father's occupation_39,0.33064553235148897
+Father's qualification_28,0.32885879774321547
+Application mode_15,0.3273347327016987
+Father's occupation_4,0.32034576826210776
+Application mode_4,0.3164335583489398
+Course_6,0.3162052375015155
+Course_4,0.31555958328003597
+Course_17,0.3139822653589095
+Course_3,0.3129244440010284
+Nacionality_9,0.31236472738423765
+Father's occupation_31,0.3052091248189421
+Course_1,0.303711450453668
+Mother's occupation_22,0.29965992302831507
+Mother's qualification_5,0.2957541894856053
+Father's occupation_16,0.29349646349897446
+Father's qualification_22,0.29325519754893703
+Mother's qualification_3,0.292701669627301
+Application mode_11,0.291732771175671
+Father's qualification_24,0.2911230156088958
+Mother's occupation_31,0.2875671528438784
+Father's qualification_1,0.2818465913279151
+Father's occupation_10,0.28183523364376545
+Nacionality_14,0.280186100351335
+Mother's occupation_7,0.27946760338668114
+Father's occupation_25,0.2791821739062645
+Mother's qualification_13,0.27827400689175025
+Father's occupation_21,0.27775561995612436
+Previous qualification_15,0.27383785431015384
+Father's occupation_43,0.27332309890198586
+Nacionality_17,0.2727359235657958
+Previous qualification_13,0.27149024334392186
+Father's occupation_45,0.270820261015143
+Application mode_9,0.2696870064239851
+Previous qualification_9,0.26894054392733807
+Previous qualification_1,0.26577695973268173
+Father's occupation_14,0.2624626077355858
+Nacionality_8,0.2622194453501937
+Father's occupation_44,0.26155620319682804
+Father's qualification_14,0.26155555392641344
+Marital status_4,0.2584101319371784
+Mother's occupation_13,0.2578665338876731
+Father's occupation_2,0.2479212290773681
+Father's occupation_17,0.24346675736032697
+Father's qualification_12,0.24225364193911436
+Mother's qualification_25,0.24000909407592033
+Mother's occupation_8,0.23963031310563498
+Previous qualification_14,0.23906690243909487
+Mother's qualification_1,0.23700588999727903
+Father's occupation_29,0.2359232136769973
+Father's qualification_27,0.23496827610805027
+Application mode_14,0.2349153039419147
+Previous qualification_16,0.23405499108362804
+Father's occupation_33,0.23346541103129903
+Curricular units 1st sem (enrolled),0.23334662536837839
+Course_13,0.2309809856721089
+Nacionality_4,0.23094306237940143
+Mother's qualification_24,0.2288149156863615
+Father's occupation_36,0.2281998552678971
+Mother's occupation_3,0.22810550770654028
+Father's occupation_23,0.22698080084519845
+Course_11,0.22663387868312332
+Nacionality_16,0.2256483955000388
+Father's occupation_8,0.22522041640265622
+Father's occupation_34,0.22239942152634926
+Father's qualification_32,0.2186933097419864
+Previous qualification_3,0.21794032838823932
+Mother's occupation_23,0.21537947255836135
+Mother's occupation_15,0.21374902172299204
+Mother's occupation_21,0.2137152842938942
+Father's qualification_16,0.21125685832233576
+Nacionality_3,0.21110472967719815
+Father's occupation_42,0.20923809407792202
+Course_15,0.20904217402061523
+Nacionality_10,0.20766681825364078
+Marital status_2,0.2035686806628837
+Mother's occupation_26,0.20266560570104974
+Mother's occupation_20,0.20152682516955991
+Mother's occupation_6,0.20003664114567274
+Mother's qualification_21,0.19781232167591214
+Mother's qualification_22,0.19695874290456405
+Marital status_5,0.19594939902388395
+Father's qualification_8,0.1955754940954337
+Mother's qualification_15,0.19444986494504116
+Father's occupation_26,0.19395656534082528
+Father's occupation_9,0.19367576192615213
+Curricular units 2nd sem (evaluations),0.1875858387615017
+Mother's qualification_17,0.18555450325987957
+Mother's occupation_17,0.18295588936542428
+Unemployment rate,0.1824886532298117
+Application mode_12,0.18027532561024695
+Previous qualification_6,0.17961944851137354
+Father's occupation_11,0.1781665409284944
+Mother's qualification_20,0.1770965577019584
+Father's qualification_25,0.1770965577019584
+Mother's occupation_28,0.17395049589992326
+Mother's occupation_11,0.1724582764482542
+Father's occupation_41,0.16885068148553842
+Father's occupation_40,0.16795033617792796
+Father's occupation_27,0.16477755332350388
+Father's occupation_13,0.16354500162046026
+Mother's occupation_2,0.16310294800855105
+Application mode_16,0.1604123178402412
+Mother's qualification_29,0.15980281084503425
+Course_5,0.1588580116373765
+Scholarship holder_1,0.1578679974161762
+Previous qualification_11,0.15780094211198722
+Mother's qualification_9,0.1564924092952608
+Marital status_1,0.15566817656043175
+Father's occupation_15,0.15448761456341845
+Mother's qualification_8,0.15435973380026227
+Course_9,0.15284955451323792
+Father's qualification_31,0.15208822328850338
+Father's qualification_26,0.15099254993780276
+Curricular units 1st sem (evaluations),0.14867892671761038
+Father's qualification_20,0.14251691001442554
+International_0,0.14207187563064852
+Nacionality_1,0.14207187563064852
+Scholarship holder_0,0.1393481615454112
+Mother's qualification_23,0.13788408613080053
+Father's occupation_7,0.13675465808727252
+Curricular units 2nd sem (credited),0.1359792751818523
+Father's qualification_4,0.13409520339986997
+Father's qualification_3,0.12841591587453896
+Application mode_7,0.12833353375234235
+Father's occupation_30,0.12593757244060164
+Application mode_18,0.1258295302116703
+Father's occupation_46,0.12484146716326854
+Mother's occupation_5,0.12478321326426443
+International_1,0.12355203975988387
+Mother's occupation_4,0.12134873543499121
+Previous qualification_7,0.11991505479994104
+Course_12,0.11915297675286445
+Mother's qualification_6,0.11771693665837722
+Father's occupation_3,0.11639506450015598
+Course_14,0.1157518795844077
+Mother's qualification_27,0.11047444477875269
+Curricular units 2nd sem (grade),0.10819564542030774
+Mother's occupation_27,0.10077231556912492
+Mother's qualification_12,0.10006061729359872
+Father's qualification_13,0.10006061729359872
+Mother's occupation_32,0.09968729772835068
+Father's occupation_37,0.09900348645684572
+average_grade,0.09851064778796437
+Application mode_2,0.09070468444417434
+Nacionality_18,0.09044519547653075
+Application order,0.0893186340638139
+Application mode_8,0.0854362887909907
+Previous qualification_12,0.08480534291264134
+Mother's occupation_14,0.08396694328463632
+Gender_1,0.08242556161818171
+Displaced_1,0.08220197192022861
+Mother's occupation_25,0.08129665455473484
+Age at enrollment,0.08091988545766733
+Father's qualification_10,0.08047106733756905
+Curricular units 1st sem (grade),0.07972017021667738
+Curricular units 2nd sem (without evaluations),0.07856021633003157
+Nacionality_20,0.07480469198805863
+Curricular units 1st sem (credited),0.07417214766817293
+grade_trend,0.0736122325080844
+Debtor_0,0.07097715790610226
+Mother's occupation_10,0.06988443779679097
+Debtor_1,0.06894136707877807
+Nacionality_6,0.06806812626548829
+Gender_0,0.06390572574741461
+Displaced_0,0.06368213604946237
+Father's occupation_6,0.05976908907024427
+Father's occupation_28,0.05271734200772212
+Father's occupation_32,0.05039280013271591
+Educational special needs_1,0.04953990497118046
+Father's qualification_6,0.044042413789986995
+Curricular units 1st sem (without evaluations),0.04383757620522249
+Mother's qualification_18,0.036612171481727705
+GDP,0.035514527257153615
+Nacionality_2,0.035297763778458204
+Daytime/evening attendance_1,0.0339853546775143
+Application mode_10,0.033058467367350075
+Father's qualification_17,0.023153387083943645
+Father's qualification_34,0.02307286416651511
+Inflation rate,0.022278033096700303
+Application mode_1,0.019997921337450347
+Previous qualification_8,0.018612617410243126
+Educational special needs_0,0.016627296116343986
+Mother's occupation_24,0.014636004893887793
+Nacionality_13,0.014115441633446512
+Daytime/evening attendance_0,0.01237838902366925
+Nacionality_5,0.012372097569773768
+Father's qualification_19,0.011465989399417467
+Nacionality_15,0.011198569306897258
+Mother's qualification_14,0.009113376562390729
+Father's qualification_15,0.004992629316742736
+Previous qualification_5,0.0009568272779678474
+Previous qualification_10,0.0008650811038844606
+Mother's qualification_11,0.000487948002669982
+Father's qualification_18,0.000297371116263792
