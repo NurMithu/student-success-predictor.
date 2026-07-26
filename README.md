@@ -30,9 +30,7 @@ score**, and **AI-generated intervention plans** for teachers.
 
 | Platform | Link |
 |---|---|
-| Streamlit Community Cloud | *add your deployed URL here after following [Deployment](#deployment)* |
-| Hugging Face Spaces | *add your deployed URL here after following [Deployment](#deployment)* |
-
+| Streamlit Community Cloud 
 ## Table of Contents
 
 - [Problem & Motivation](#problem--motivation)
@@ -235,43 +233,6 @@ streamlit run app.py
 
 Then open the local URL Streamlit prints (default `http://localhost:8501`).
 
-**3. (Optional) Enable AI-generated intervention recommendations:**
-
-Without any setup, the app generates intervention plans using a rule-based
-engine. To get Claude-generated plans instead, provide an Anthropic API key
-either:
-
-```bash
-export ANTHROPIC_API_KEY=sk-ant-...
-```
-
-or paste it into the "Anthropic API key (optional)" field in the app's sidebar
-(session-only, never written to disk). Get a key at
-[console.anthropic.com](https://console.anthropic.com/).
-
-**4. (Optional) Use the model programmatically:**
-
-```python
-from src.predict import StudentSuccessPredictor
-
-predictor = StudentSuccessPredictor()
-result = predictor.predict_one({
-    "Marital status": 1, "Application mode": 1, "Application order": 1,
-    "Course": 9500, "Daytime/evening attendance": 1, "Previous qualification": 1,
-    "Nacionality": 1, "Mother's qualification": 1, "Father's qualification": 1,
-    "Mother's occupation": 5, "Father's occupation": 5, "Displaced": 1,
-    "Educational special needs": 0, "Debtor": 0, "Tuition fees up to date": 1,
-    "Gender": 0, "Scholarship holder": 1, "Age at enrollment": 19, "International": 0,
-    "Curricular units 1st sem (credited)": 0, "Curricular units 1st sem (enrolled)": 6,
-    "Curricular units 1st sem (evaluations)": 6, "Curricular units 1st sem (approved)": 6,
-    "Curricular units 1st sem (grade)": 14.0, "Curricular units 1st sem (without evaluations)": 0,
-    "Curricular units 2nd sem (credited)": 0, "Curricular units 2nd sem (enrolled)": 6,
-    "Curricular units 2nd sem (evaluations)": 6, "Curricular units 2nd sem (approved)": 6,
-    "Curricular units 2nd sem (grade)": 14.0, "Curricular units 2nd sem (without evaluations)": 0,
-    "Unemployment rate": 11.0, "Inflation rate": 1.0, "GDP": 1.0,
-})
-print(result["predicted_status"], result["risk_level"])
-```
 
 ## Deployment
 
@@ -291,58 +252,6 @@ CI/build step) so the deployed app doesn't need to retrain on startup.
 5. Click **Deploy**. Streamlit installs `requirements.txt` automatically.
 6. Copy the resulting `https://<app-name>.streamlit.app` URL into this README.
 
-### Option B: Hugging Face Spaces
-
-1. Create a new Space at [huggingface.co/new-space](https://huggingface.co/new-space).
-2. Choose **SDK: Streamlit**.
-3. Push this repo's contents to the Space's git remote (HF Spaces are git repos):
-   ```bash
-   git remote add space https://huggingface.co/spaces/<your-username>/<space-name>
-   git push space main
-   ```
-4. Make sure the Space's `README.md` front matter includes:
-   ```yaml
-   ---
-   title: Student Success Predictor
-   emoji: 🎓
-   sdk: streamlit
-   app_file: app.py
-   pinned: false
-   ---
-   ```
-   (Hugging Face pre-fills this when you create the Space via the UI — merge
-   it with, or place it above, this repository's README content.)
-5. (Optional, for Claude-generated recommendations) Go to the Space's
-   **Settings → Variables and secrets** and add a new secret:
-   ```
-   ANTHROPIC_API_KEY = sk-ant-...
-   ```
-   The app reads it from the environment automatically — no code changes needed.
-6. The Space builds automatically and gives you a public
-   `https://huggingface.co/spaces/<your-username>/<space-name>` URL.
-
-> **Note:** the `models/` folder (trained artifacts + SHAP background sample)
-> must be committed to whichever repo/Space you push — both platforms serve
-> the app as-is without a build-time training step.
-
-## Power BI Alternative
-
-The task brief mentions Power BI or Streamlit — this repo ships the interactive
-experience as Streamlit (so it's a single deployable app with no separate BI
-license), but every output is plain CSV/JSON, so a Power BI front end is a
-drop-in alternative if your institution standardizes on that stack:
-
-1. Run `python -m src.train` to generate `models/metrics.json` and
-   `models/feature_importance.csv`.
-2. Use the **Batch (CSV)** page in the app (or `StudentSuccessPredictor.predict()`
-   directly) to export a `student_predictions.csv` with `predicted_status`,
-   `risk_score`, `risk_level`, and per-class probabilities for a cohort.
-3. In Power BI Desktop: **Get Data → Text/CSV**, point at that predictions
-   file (and `feature_importance.csv` for a SHAP-adjacent bar chart), then
-   build cards/tables/slicers on `risk_level` and `risk_score` the same way
-   you would for the Streamlit "Batch Prediction" page.
-4. Publish to the Power BI Service and schedule a refresh against a
-   regenerated CSV if the underlying data changes.
 
 ## Testing
 
