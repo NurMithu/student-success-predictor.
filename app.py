@@ -25,9 +25,19 @@ from src.codebook import (
     NATIONALITY, YES_NO, GENDER, options_for_select,
 )
 from src.predict import StudentSuccessPredictor
-from src.shap_utils import ShapExplainer
 from src.risk_scoring import friendly_feature_name
 from src.llm_recommendations import StudentContext, generate_recommendation
+
+# SHAP pulls in numba/llvmlite, which occasionally lack prebuilt wheels for
+# whatever Python version a deployment platform happens to use. Importing it
+# lazily/defensively means a SHAP install problem degrades gracefully (those
+# specific panels show a message) instead of taking down the entire app.
+try:
+    from src.shap_utils import ShapExplainer
+    SHAP_IMPORT_ERROR = None
+except Exception as e:  # pragma: no cover
+    ShapExplainer = None
+    SHAP_IMPORT_ERROR = str(e)
 
 st.set_page_config(
     page_title="Student Success Predictor",
@@ -46,7 +56,21 @@ def load_predictor():
 
 @st.cache_resource
 def load_shap_explainer():
-    return ShapExplainer()
+    if ShapExplainer is None:
+        return None
+    try:
+        return ShapExplainer()
+    except Exception:
+        return None
+
+
+def shap_unavailable_message():
+    st.info(
+        "SHAP explanations aren't available in this deployment (the `shap` package "
+        "failed to load — this is usually a Python-version/wheel mismatch on the "
+        "hosting platform, not a problem with your data or model). Predictions, risk "
+        "scores, and intervention recommendations below are unaffected."
+    )
 
 
 @st.cache_data
@@ -112,10 +136,20 @@ try:
     predictor = load_predictor()
     metrics = load_metrics()
     model_ready = True
-except FileNotFoundError:
+    model_load_error = None
+except Exception as e:
     predictor = None
     metrics = None
     model_ready = False
+    model_load_error = str(e)
+
+def show_model_not_ready(kind="error"):
+    msg = "No trained model found. Run `python -m src.train` first."
+    fn = st.error if kind == "error" else st.warning
+    fn(msg)
+    if model_load_error:
+        st.caption(f"Details: {model_load_error}")
+
 
 # ---------------------------------------------------------------------------
 # Page: Overview
@@ -138,7 +172,7 @@ at-risk students early, so advisors and academic staff can step in with targeted
         col3.metric("Macro ROC-AUC", f"{metrics['test_metrics']['roc_auc_macro']:.3f}")
         col4.metric("Macro F1", f"{metrics['test_metrics']['f1_macro']:.3f}")
     else:
-        st.warning("No trained model found. Run `python -m src.train` first.")
+        show_model_not_ready(kind="warning")
 
     st.markdown("### How it works")
     c1, c2, c3, c4 = st.columns(4)
@@ -178,7 +212,7 @@ elif page == "Predict — Single Student":
     st.title("Predict a Single Student's Outcome")
 
     if not model_ready:
-        st.error("No trained model found. Run `python -m src.train` first, then restart the app.")
+        show_model_not_ready()
         st.stop()
 
     st.write("Fill in the student's enrollment details and academic record below.")
@@ -333,39 +367,44 @@ elif page == "Predict — Single Student":
         # ---- SHAP explanation for this specific student -------------------
         st.markdown("---")
         st.subheader("🔍 Why this prediction? (SHAP explanation)")
-        with st.spinner("Computing SHAP explanation..."):
-            explainer = load_shap_explainer()
-            student_df = pd.DataFrame([student])
-            contrib = explainer.dropout_contributions(student_df).iloc[0]
+        explainer = load_shap_explainer()
+        top_up = pd.Series(dtype=float)
+        top_down = pd.Series(dtype=float)
+        if explainer is None:
+            shap_unavailable_message()
+        else:
+            with st.spinner("Computing SHAP explanation..."):
+                student_df = pd.DataFrame([student])
+                contrib = explainer.dropout_contributions(student_df).iloc[0]
 
-        top_up = contrib.sort_values(ascending=False).head(6)
-        top_down = contrib.sort_values(ascending=True).head(6)
+            top_up = contrib.sort_values(ascending=False).head(6)
+            top_down = contrib.sort_values(ascending=True).head(6)
 
-        c_up, c_down = st.columns(2)
-        with c_up:
-            st.markdown("**⬆️ Factors increasing dropout risk**")
-            up_df = pd.DataFrame(
-                {"feature": [friendly_feature_name(f) for f in top_up.index], "impact": top_up.values}
-            )
-            up_df = up_df[up_df["impact"] > 0]
-            if len(up_df) > 0:
-                fig_up = px.bar(up_df.sort_values("impact"), x="impact", y="feature", orientation="h",
-                                 color_discrete_sequence=["#C62828"])
-                st.plotly_chart(fig_up, use_container_width=True)
-            else:
-                st.caption("No strong risk-increasing factors detected.")
-        with c_down:
-            st.markdown("**⬇️ Factors decreasing dropout risk**")
-            down_df = pd.DataFrame(
-                {"feature": [friendly_feature_name(f) for f in top_down.index], "impact": top_down.values}
-            )
-            down_df = down_df[down_df["impact"] < 0]
-            if len(down_df) > 0:
-                fig_down = px.bar(down_df.sort_values("impact", ascending=False), x="impact", y="feature",
-                                   orientation="h", color_discrete_sequence=["#2E7D32"])
-                st.plotly_chart(fig_down, use_container_width=True)
-            else:
-                st.caption("No strong risk-decreasing factors detected.")
+            c_up, c_down = st.columns(2)
+            with c_up:
+                st.markdown("**⬆️ Factors increasing dropout risk**")
+                up_df = pd.DataFrame(
+                    {"feature": [friendly_feature_name(f) for f in top_up.index], "impact": top_up.values}
+                )
+                up_df = up_df[up_df["impact"] > 0]
+                if len(up_df) > 0:
+                    fig_up = px.bar(up_df.sort_values("impact"), x="impact", y="feature", orientation="h",
+                                     color_discrete_sequence=["#C62828"])
+                    st.plotly_chart(fig_up, use_container_width=True)
+                else:
+                    st.caption("No strong risk-increasing factors detected.")
+            with c_down:
+                st.markdown("**⬇️ Factors decreasing dropout risk**")
+                down_df = pd.DataFrame(
+                    {"feature": [friendly_feature_name(f) for f in top_down.index], "impact": top_down.values}
+                )
+                down_df = down_df[down_df["impact"] < 0]
+                if len(down_df) > 0:
+                    fig_down = px.bar(down_df.sort_values("impact", ascending=False), x="impact", y="feature",
+                                       orientation="h", color_discrete_sequence=["#2E7D32"])
+                    st.plotly_chart(fig_down, use_container_width=True)
+                else:
+                    st.caption("No strong risk-decreasing factors detected.")
 
         # ---- Rule-of-thumb intervention banner -----------------------------
         if result["risk_level"] == "High Risk":
@@ -412,7 +451,7 @@ elif page == "Predict — Batch (CSV)":
     st.title("Batch Prediction from CSV")
 
     if not model_ready:
-        st.error("No trained model found. Run `python -m src.train` first, then restart the app.")
+        show_model_not_ready()
         st.stop()
 
     st.write(
@@ -469,14 +508,19 @@ elif page == "Predict — Batch (CSV)":
                 explainer = load_shap_explainer()
                 subset = high_risk.head(n_students)
                 subset_raw = input_df.loc[subset.index]
-                contrib_df = explainer.dropout_contributions(subset_raw)
+                contrib_df = explainer.dropout_contributions(subset_raw) if explainer is not None else None
+                if explainer is None:
+                    shap_unavailable_message()
 
                 for idx in subset.index:
                     row = combined.loc[idx]
-                    contrib_row = contrib_df.loc[idx].sort_values(ascending=False)
-                    top_factors = [
-                        (friendly_feature_name(f), float(v)) for f, v in contrib_row.head(5).items() if v > 0
-                    ]
+                    if contrib_df is not None:
+                        contrib_row = contrib_df.loc[idx].sort_values(ascending=False)
+                        top_factors = [
+                            (friendly_feature_name(f), float(v)) for f, v in contrib_row.head(5).items() if v > 0
+                        ]
+                    else:
+                        top_factors = []
                     ctx = StudentContext(
                         student_label=f"Student (row {idx})",
                         predicted_status=row["predicted_status"],
@@ -498,7 +542,7 @@ elif page == "Model Performance":
     st.title("Model Performance")
 
     if not model_ready:
-        st.error("No trained model found. Run `python -m src.train` first.")
+        show_model_not_ready()
         st.stop()
 
     st.subheader("Validation Comparison Across Candidate Models")
@@ -536,16 +580,19 @@ elif page == "Model Performance":
         "Computed on a 200-row background sample from the training data. SHAP values show each "
         "feature's actual contribution to model output, which can differ from model-native importance above."
     )
-    with st.spinner("Computing SHAP global importance (first load only)..."):
-        explainer = load_shap_explainer()
-        global_imp = explainer.global_importance(sample_size=150).head(15)
-    global_imp["feature"] = global_imp["feature"].apply(friendly_feature_name)
-    global_imp = global_imp.groupby("feature", as_index=False)["mean_abs_shap"].sum().sort_values(
-        "mean_abs_shap"
-    ).tail(15)
-    fig_shap = px.bar(global_imp, x="mean_abs_shap", y="feature", orientation="h",
-                       color_discrete_sequence=["#5C6BC0"])
-    st.plotly_chart(fig_shap, use_container_width=True)
+    explainer = load_shap_explainer()
+    if explainer is None:
+        shap_unavailable_message()
+    else:
+        with st.spinner("Computing SHAP global importance (first load only)..."):
+            global_imp = explainer.global_importance(sample_size=150).head(15)
+        global_imp["feature"] = global_imp["feature"].apply(friendly_feature_name)
+        global_imp = global_imp.groupby("feature", as_index=False)["mean_abs_shap"].sum().sort_values(
+            "mean_abs_shap"
+        ).tail(15)
+        fig_shap = px.bar(global_imp, x="mean_abs_shap", y="feature", orientation="h",
+                           color_discrete_sequence=["#5C6BC0"])
+        st.plotly_chart(fig_shap, use_container_width=True)
 
 # ---------------------------------------------------------------------------
 # Page: Data insights

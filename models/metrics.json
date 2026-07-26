@@ -4,7 +4,7 @@
     "logistic_regression": {
       "accuracy": 0.7720090293453724,
       "f1_macro": 0.7373016142821349,
-      "roc_auc_macro": 0.8918820067786588
+      "roc_auc_macro": 0.8918574800756306
     },
     "random_forest": {
       "accuracy": 0.7539503386004515,
@@ -12,9 +12,9 @@
       "roc_auc_macro": 0.8846566632038667
     },
     "xgboost": {
-      "accuracy": 0.7539503386004515,
-      "f1_macro": 0.7130076572296252,
-      "roc_auc_macro": 0.8971796578980973
+      "accuracy": 0.7516930022573364,
+      "f1_macro": 0.7104352009784264,
+      "roc_auc_macro": 0.8942439590164892
     },
     "lightgbm": {
       "accuracy": 0.7674943566591422,
@@ -25,7 +25,7 @@
   "test_metrics": {
     "accuracy": 0.7186440677966102,
     "f1_macro": 0.6792794813594597,
-    "roc_auc_macro": 0.8785393989476082
+    "roc_auc_macro": 0.8785682912927953
   },
   "test_classification_report": {
     "Dropout": {

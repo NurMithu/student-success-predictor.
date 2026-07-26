@@ -1,11 +1,18 @@
+# Runtime dependencies for the deployed Streamlit app (app.py).
+# Deliberately excludes xgboost/lightgbm: the current winning model
+# (see models/metadata.json) is scikit-learn Logistic Regression, and
+# joblib only needs the library that *created* the pickled model to load
+# it back. This keeps deployment (Streamlit Cloud / Hugging Face Spaces)
+# fast — xgboost alone is a ~300MB wheel due to bundled CUDA support.
+#
+# If you retrain and a tree model (Random Forest/XGBoost/LightGBM) wins
+# instead, install requirements-train.txt in your deployment environment
+# too (see README > Deployment for details).
 streamlit==1.38.0
 pandas==2.2.2
 numpy==1.26.4
 scikit-learn==1.5.1
 joblib==1.4.2
 plotly==5.23.0
-pytest==8.3.2
-xgboost==2.1.1
-lightgbm==4.5.0
 shap==0.46.0
 anthropic==0.34.2

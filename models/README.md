@@ -23,3 +23,10 @@ It contains:
 
 To regenerate them (e.g. after changing features or adding data), just re-run
 `python -m src.train` — it will overwrite all files in this folder.
+
+> **Version note:** these artifacts were pickled using the exact versions
+> pinned in `requirements.txt`/`requirements-train.txt`. If you retrain with
+> different library versions installed, make sure to update those pinned
+> versions to match — scikit-learn (and similar libraries) don't always
+> guarantee pickle compatibility across versions, and a mismatch can cause
+> the deployed app to fail with an `AttributeError` when loading the model.

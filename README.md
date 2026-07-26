@@ -28,9 +28,8 @@ score**, and **AI-generated intervention plans** for teachers.
 
 ## Live Demo
 
-| Platform | Link |
-|---|---|
-| Streamlit Community Cloud 
+🔗 **[Add your Streamlit Community Cloud URL here after deploying](#deployment)**
+
 ## Table of Contents
 
 - [Problem & Motivation](#problem--motivation)
@@ -167,8 +166,11 @@ confusion matrix, per-class precision/recall, and feature importance.
 ```
 student-success-predictor/
 ├── app.py                      # Streamlit dashboard (entry point)
-├── requirements.txt
+├── requirements.txt             # lean, deploy-time deps (no xgboost/lightgbm)
+├── requirements-train.txt       # adds xgboost, lightgbm, pytest for training/testing
 ├── LICENSE
+├── notebooks/
+│   └── eda_and_modeling.ipynb   # exploratory analysis + model comparison walkthrough
 ├── data/
 │   ├── students_dropout_academic_success.csv
 │   └── README.md               # dataset documentation & citation
@@ -204,8 +206,15 @@ cd student-success-predictor
 python -m venv venv
 source venv/bin/activate        # Windows: venv\Scripts\activate
 
+# To just run the app (fast install, no xgboost/lightgbm):
 pip install -r requirements.txt
+
+# To also retrain the model or run tests (adds xgboost, lightgbm, pytest):
+pip install -r requirements-train.txt
 ```
+
+`requirements.txt` is intentionally minimal so Streamlit Cloud deploys
+quickly — see [Deployment](#deployment) for why.
 
 ## Usage
 
@@ -233,29 +242,124 @@ streamlit run app.py
 
 Then open the local URL Streamlit prints (default `http://localhost:8501`).
 
+**3. (Optional) Enable AI-generated intervention recommendations:**
+
+Without any setup, the app generates intervention plans using a rule-based
+engine. To get Claude-generated plans instead, provide an Anthropic API key
+either:
+
+```bash
+export ANTHROPIC_API_KEY=sk-ant-...
+```
+
+or paste it into the "Anthropic API key (optional)" field in the app's sidebar
+(session-only, never written to disk). Get a key at
+[console.anthropic.com](https://console.anthropic.com/).
+
+**4. (Optional) Use the model programmatically:**
+
+```python
+from src.predict import StudentSuccessPredictor
+
+predictor = StudentSuccessPredictor()
+result = predictor.predict_one({
+    "Marital status": 1, "Application mode": 1, "Application order": 1,
+    "Course": 9500, "Daytime/evening attendance": 1, "Previous qualification": 1,
+    "Nacionality": 1, "Mother's qualification": 1, "Father's qualification": 1,
+    "Mother's occupation": 5, "Father's occupation": 5, "Displaced": 1,
+    "Educational special needs": 0, "Debtor": 0, "Tuition fees up to date": 1,
+    "Gender": 0, "Scholarship holder": 1, "Age at enrollment": 19, "International": 0,
+    "Curricular units 1st sem (credited)": 0, "Curricular units 1st sem (enrolled)": 6,
+    "Curricular units 1st sem (evaluations)": 6, "Curricular units 1st sem (approved)": 6,
+    "Curricular units 1st sem (grade)": 14.0, "Curricular units 1st sem (without evaluations)": 0,
+    "Curricular units 2nd sem (credited)": 0, "Curricular units 2nd sem (enrolled)": 6,
+    "Curricular units 2nd sem (evaluations)": 6, "Curricular units 2nd sem (approved)": 6,
+    "Curricular units 2nd sem (grade)": 14.0, "Curricular units 2nd sem (without evaluations)": 0,
+    "Unemployment rate": 11.0, "Inflation rate": 1.0, "GDP": 1.0,
+})
+print(result["predicted_status"], result["risk_level"])
+```
 
 ## Deployment
 
-The app is a single self-contained Streamlit script, so it deploys cleanly to
-either platform below. **Commit the `models/` folder** (or regenerate it in a
-CI/build step) so the deployed app doesn't need to retrain on startup.
+This app is deployed via **Streamlit Community Cloud**.
 
-### Option A: Streamlit Community Cloud
+**Before deploying:** make sure `models/` (the trained artifacts) is committed
+to your repo — the app loads a pre-trained model rather than retraining on
+startup, so deployment is fast and doesn't need `requirements-train.txt`.
 
-1. Push this repo to GitHub (public repo, model artifacts included in `models/`).
+1. Push this repo to GitHub (public repo, `models/` folder included).
 2. Go to [share.streamlit.io](https://share.streamlit.io) → **New app**.
 3. Select your repo/branch and set **Main file path** to `app.py`.
-4. (Optional, for Claude-generated recommendations) In **Advanced settings → Secrets**, add:
+4. **Click "Advanced settings" before deploying** and explicitly set **Python
+   version to 3.11**. This step matters a lot: Streamlit Community Cloud has
+   been defaulting new apps to Python 3.13/3.14, and older-but-well-supported
+   packages this project depends on (`numpy`, `shap`'s `numba`/`llvmlite`,
+   etc.) don't yet have installable wheels for those versions — the build
+   fails silently and the app just never finishes loading. A `runtime.txt`
+   file is *not* a reliable fix for this (there are multiple open Streamlit
+   Cloud bug reports of it being ignored) — the Advanced settings dropdown is
+   the mechanism that actually works. **If you already deployed and it's
+   stuck**, Python version can't be changed on an existing app — delete it
+   and redeploy, setting the version in Advanced settings this time.
+5. (Optional, for Claude-generated recommendations) In the same **Advanced
+   settings → Secrets** box, add:
    ```toml
    ANTHROPIC_API_KEY = "sk-ant-..."
    ```
-5. Click **Deploy**. Streamlit installs `requirements.txt` automatically.
-6. Copy the resulting `https://<app-name>.streamlit.app` URL into this README.
+   Without this, the app automatically uses the rule-based recommendation
+   fallback — fully functional either way.
+6. Click **Deploy**. Streamlit installs `requirements.txt` automatically.
+7. Copy the resulting `https://<app-name>.streamlit.app` URL into this README.
 
+**If the app still fails to load after setting Python 3.11:** open **Manage
+app → logs** from the Streamlit Cloud dashboard — the real error is always in
+there (usually a `pip install` failure for a specific package). The app is
+also written to degrade gracefully rather than crash outright: if `shap`
+specifically fails to install, every other page (predictions, risk scores,
+batch scoring, LLM recommendations) still works — only the SHAP explanation
+panels show an informational message instead of a chart.
+
+### Why the deploy should now be fast
+
+Two dependency issues were fixed to keep the build quick:
+
+- **`xgboost` no longer installs on deploy.** `requirements.txt` (used by the
+  app) intentionally excludes `xgboost`/`lightgbm` — the currently-winning
+  model is scikit-learn Logistic Regression, and unpickling a saved model
+  only needs the library that created it. `xgboost` alone is a ~300MB wheel
+  (it bundles CUDA support even for CPU-only use), so skipping it when it's
+  not needed cuts real time off the build.
+- **`xgboost` is pinned to `2.0.3` in `requirements-train.txt`** (used only
+  for `python -m src.train` / `pytest`, run locally). Versions `2.1.0+`
+  unconditionally pull in an extra `nvidia-nccl-cu12` package (~300MB) even
+  on CPU-only machines — `2.0.3` avoids that entirely with identical
+  training/inference behavior for this project.
+
+If you retrain locally and a tree-based model (Random Forest/XGBoost/LightGBM)
+wins instead of Logistic Regression, add `xgboost==2.0.3` and/or
+`lightgbm==4.5.0` back to `requirements.txt` before redeploying — otherwise
+the deployed app will fail to unpickle that model.
+
+## Power BI Alternative
+
+The task brief mentions Power BI or Streamlit — this repo ships the interactive
+experience as Streamlit, but every output is plain CSV/JSON, so a Power BI
+front end is a drop-in alternative if you ever need one:
+
+1. Use the **Batch (CSV)** page in the app (or `StudentSuccessPredictor.predict()`
+   directly) to export a `student_predictions.csv` with `predicted_status`,
+   `risk_score`, `risk_level`, and per-class probabilities for a cohort.
+2. In Power BI Desktop: **Get Data → Text/CSV**, point at that predictions
+   file (and `models/feature_importance.csv` for a feature-importance chart),
+   then build cards/tables/slicers on `risk_level` and `risk_score`.
+3. Publish to the Power BI Service and schedule a refresh against a
+   regenerated CSV if the underlying data changes.
 
 ## Testing
 
 ```bash
+pip install -r requirements-train.txt   # adds pytest (not in the lean requirements.txt)
 pytest -v
 ```
 

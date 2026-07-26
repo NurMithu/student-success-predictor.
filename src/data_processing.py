@@ -46,7 +46,7 @@ def engineer_features(df: pd.DataFrame) -> pd.DataFrame:
     # Approval ratio = share of enrolled units the student actually passed.
     # This single ratio is one of the strongest early-warning signals.
     df["approval_ratio"] = df["total_units_approved"] / df["total_units_enrolled"].replace(0, pd.NA)
-    df["approval_ratio"] = df["approval_ratio"].fillna(0)
+    df["approval_ratio"] = pd.to_numeric(df["approval_ratio"], errors="coerce").fillna(0.0)
 
     # Average grade across both semesters (0 where a student has no evaluations)
     grade_1 = df["Curricular units 1st sem (grade)"]

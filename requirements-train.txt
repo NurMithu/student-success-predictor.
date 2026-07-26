@@ -1,0 +1,6 @@
+# Extra dependencies needed only for `python -m src.train` (model comparison)
+# and `pytest` (test suite). Not needed to just run the deployed app.
+-r requirements.txt
+xgboost==2.0.3
+lightgbm==4.5.0
+pytest==8.3.2
